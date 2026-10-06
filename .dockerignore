@@ -1,0 +1,35 @@
+# Результаты сборки Maven
+target/
+output/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Секреты и локальные настройки
+.env
+.env.*
+!.env.example
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Отчёты и покрытие тестов
+coverage/
+reports/

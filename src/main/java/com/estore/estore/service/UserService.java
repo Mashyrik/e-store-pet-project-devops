@@ -113,36 +113,6 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    /**
-     * Создать администратора (если не существует)
-     */
-    public User createAdminUser() {
-        if (!userRepository.existsByUsername("admin")) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setEmail("admin@estore.com");
-            admin.setPassword("admin123");
-            admin.setRole(Role.ROLE_ADMIN);
-            return saveUser(admin);
-        }
-        return null;
-    }
-
-    /**
-     * Создать обычного пользователя (если не существует)
-     */
-    public User createRegularUser() {
-        if (!userRepository.existsByUsername("user")) {
-            User user = new User();
-            user.setUsername("user");
-            user.setEmail("user@estore.com");
-            user.setPassword("user123");
-            user.setRole(Role.ROLE_USER);
-            return saveUser(user);
-        }
-        return null;
-    }
-
     // ============ МЕТОДЫ ДЛЯ ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ ============
 
     /**

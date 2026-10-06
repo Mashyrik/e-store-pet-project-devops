@@ -3,15 +3,44 @@ package com.estore.estore.config;
 import com.estore.estore.model.Role;
 import com.estore.estore.model.User;
 import com.estore.estore.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AdminUserInitializer implements CommandLineRunner {
 
+    private static final Logger log = LoggerFactory.getLogger(AdminUserInitializer.class);
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.bootstrap.admin.enabled:false}")
+    private boolean adminBootstrapEnabled;
+
+    @Value("${app.bootstrap.admin.username:admin}")
+    private String adminUsername;
+
+    @Value("${app.bootstrap.admin.email:}")
+    private String adminEmail;
+
+    @Value("${app.bootstrap.admin.password:}")
+    private String adminPassword;
+
+    @Value("${app.bootstrap.test-user.enabled:false}")
+    private boolean testUserBootstrapEnabled;
+
+    @Value("${app.bootstrap.test-user.username:user}")
+    private String testUsername;
+
+    @Value("${app.bootstrap.test-user.email:}")
+    private String testUserEmail;
+
+    @Value("${app.bootstrap.test-user.password:}")
+    private String testUserPassword;
 
     public AdminUserInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -19,39 +48,65 @@ public class AdminUserInitializer implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        System.out.println("=== ИНИЦИАЛИЗАЦИЯ ПОЛЬЗОВАТЕЛЕЙ ===");
-
-        // Создаем администратора, если он не существует
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setEmail("admin@estore.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setRole(Role.ROLE_ADMIN);
-            userRepository.save(admin);
-            System.out.println("✅ Администратор создан: admin / admin123");
-        } else {
-            System.out.println("👑 Администратор уже существует");
+    public void run(String... args) {
+        if (adminBootstrapEnabled) {
+            createUserIfMissing(
+                    "administrator",
+                    adminUsername,
+                    adminEmail,
+                    adminPassword,
+                    Role.ROLE_ADMIN
+            );
         }
 
-        // Создаем тестового пользователя, если он не существует
-        if (userRepository.findByUsername("user").isEmpty()) {
-            User user = new User();
-            user.setUsername("user");
-            user.setEmail("user@estore.com");
-            user.setPassword(passwordEncoder.encode("user123"));
-            user.setRole(Role.ROLE_USER);
-            userRepository.save(user);
-            System.out.println("✅ Пользователь создан: user / user123");
-        } else {
-            System.out.println("👤 Пользователь уже существует");
+        if (testUserBootstrapEnabled) {
+            createUserIfMissing(
+                    "test user",
+                    testUsername,
+                    testUserEmail,
+                    testUserPassword,
+                    Role.ROLE_USER
+            );
+        }
+    }
+
+    private void createUserIfMissing(
+            String userType,
+            String username,
+            String email,
+            String password,
+            Role role
+    ) {
+        requireValue(username, userType + " username");
+        requireValue(email, userType + " email");
+        requireValue(password, userType + " password");
+
+        if (userRepository.findByUsername(username).isPresent()) {
+            log.info("Bootstrap skipped: {} '{}' already exists", userType, username);
+            return;
         }
 
-        // Проверяем количество пользователей в системе
-        long userCount = userRepository.count();
-        System.out.println("📊 Всего пользователей в системе: " + userCount);
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new IllegalStateException(
+                    "Cannot create " + userType + ": email is already in use"
+            );
+        }
 
-        System.out.println("=== ИНИЦИАЛИЗАЦИЯ ЗАВЕРШЕНА ===");
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setRole(role);
+        userRepository.save(user);
+
+        log.info("Bootstrap created {} '{}'", userType, username);
+    }
+
+    private void requireValue(String value, String propertyDescription) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException(
+                    "Cannot bootstrap user: " + propertyDescription + " is required"
+            );
+        }
     }
 }
