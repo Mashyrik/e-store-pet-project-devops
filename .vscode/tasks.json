@@ -1,0 +1,38 @@
+{
+    "version": "2.0.0",
+    "options": {
+        "env": {
+            "JAVA_HOME": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.12.101-hotspot",
+            "PATH": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.12.101-hotspot\\bin;${env:PATH}"
+        }
+    },
+    "tasks": [
+        {
+            "label": "Maven: test",
+            "type": "shell",
+            "command": ".\\mvnw.cmd",
+            "args": ["test"],
+            "group": "test",
+            "problemMatcher": ["$javac"]
+        },
+        {
+            "label": "Maven: clean package",
+            "type": "shell",
+            "command": ".\\mvnw.cmd",
+            "args": ["clean", "package"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$javac"]
+        },
+        {
+            "label": "Spring Boot: run",
+            "type": "shell",
+            "command": ".\\mvnw.cmd",
+            "args": ["spring-boot:run"],
+            "problemMatcher": ["$javac"],
+            "isBackground": true
+        }
+    ]
+}

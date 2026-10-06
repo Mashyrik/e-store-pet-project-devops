@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Store - Оформление заказа</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .checkout-hero {
+            background: linear-gradient(135deg, rgba(79,70,229,0.12), rgba(16,185,129,0.12));
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        .checkout-hero h1 {
+            font-size: 2.4rem;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        .checkout-hero p {
+            color: #4b5563;
+        }
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .checkout-form-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .checkout-summary {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 2rem;
+            height: fit-content;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .form-group .required {
+            color: #ef4444;
+        }
+        .order-items {
+            margin-bottom: 2rem;
+        }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        .order-item-info {
+            flex: 1;
+        }
+        .order-item-name {
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+        .order-item-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .order-item-price {
+            font-weight: 600;
+            color: #111827;
+        }
+        .order-total {
+            padding-top: 1.5rem;
+            border-top: 2px solid #e5e7eb;
+            margin-top: 1rem;
+        }
+        .order-total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+        }
+        .order-total-row.final {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e5e7eb;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+        }
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        .empty-cart-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .error-message {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        @media (max-width: 768px) {
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            .checkout-summary {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Хедер -->
+<header class="header">
+    <nav class="navbar container">
+        <div class="logo">
+            E-Store
+        </div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Главная</a>
+            <a href="products.html">Товары</a>
+            <a href="categories.html">Категории</a>
+            <a href="cart.html">
+                Корзина
+                <span class="cart-count" id="cartCount">0</span>
+            </a>
+            <a href="login.html" id="loginLink">Войти</a>
+            <a href="profile.html" id="profileLink">Профиль</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="checkout-hero">
+        <div class="container">
+            <h1>Оформление заказа</h1>
+            <p>Заполните данные для доставки</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="checkout-container">
+            <!-- Форма оформления заказа -->
+            <div class="checkout-form-section">
+                <h2 style="margin-bottom: 2rem; color: #111827;">Адрес доставки</h2>
+                
+                <form id="checkoutForm">
+                    <div class="form-group">
+                        <label for="city">
+                            Город <span class="required">*</span>
+                        </label>
+                        <input type="text" id="city" name="city" required 
+                               placeholder="Например: Минск">
+                        <div class="error-message" id="cityError"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="street">
+                            Улица <span class="required">*</span>
+                        </label>
+                        <input type="text" id="street" name="street" required 
+                               placeholder="Например: ул. Ленина">
+                        <div class="error-message" id="streetError"></div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="house">
+                                Дом <span class="required">*</span>
+                            </label>
+                            <input type="text" id="house" name="house" required 
+                                   placeholder="Например: 15">
+                            <div class="error-message" id="houseError"></div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apartment">
+                                Квартира
+                            </label>
+                            <input type="text" id="apartment" name="apartment" 
+                                   placeholder="Например: 42">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="postalCode">
+                            Почтовый индекс
+                        </label>
+                        <input type="text" id="postalCode" name="postalCode" 
+                               placeholder="Например: 220000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">
+                            Комментарий к заказу
+                        </label>
+                        <textarea id="notes" name="notes" 
+                                  placeholder="Дополнительная информация для курьера (необязательно)"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary submit-btn" id="submitOrderBtn">
+                        Оформить заказ
+                    </button>
+                </form>
+            </div>
+
+            <!-- Сводка заказа -->
+            <div class="checkout-summary">
+                <h2 style="margin-bottom: 1.5rem; color: #111827;">Ваш заказ</h2>
+                
+                <div id="orderItems" class="order-items">
+                    <p>Загрузка товаров...</p>
+                </div>
+
+                <div class="order-total">
+                    <div class="order-total-row">
+                        <span>Товары:</span>
+                        <span id="itemsTotal">0 BYN</span>
+                    </div>
+                    <div class="order-total-row">
+                        <span>Доставка:</span>
+                        <span>Бесплатно</span>
+                    </div>
+                    <div class="order-total-row final">
+                        <span>Итого:</span>
+                        <span id="totalAmount">0 BYN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Футер -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>E-Store</h3>
+                <p>Ваш надежный партнер в мире электроники</p>
+            </div>
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>📞 +375 (29) 123-45-67</p>
+                <p>✉️ info@estore.com</p>
+                <p>📍 г. Минск</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 E-Store</p>
+        </div>
+    </div>
+</footer>
+
+<!-- JavaScript -->
+<script src="js/utils/storage.js"></script>
+<script src="js/components/auth.service.js"></script>
+<script src="js/services/cart.service.js"></script>
+<script src="js/components/cart.js"></script>
+<script src="js/components/checkout.js"></script>
+<script src="js/utils/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        App.updateAuthUI(!!localStorage.getItem('token'));
+        CheckoutComponent.init();
+    });
+</script>
+</body>
+</html>
+

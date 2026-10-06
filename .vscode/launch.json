@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Run EStoreApplication",
+            "request": "launch",
+            "mainClass": "com.estore.estore.EStoreApplication",
+            "projectName": "e-store"
+        },
+        {
+            "type": "java",
+            "name": "Debug EStoreApplication",
+            "request": "launch",
+            "mainClass": "com.estore.estore.EStoreApplication",
+            "projectName": "e-store"
+        }
+    ]
+}

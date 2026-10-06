@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Store - Магазин электроники</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Временные дебаг стили */
+        *:focus {
+            outline: 2px solid #667eea !important;
+        }
+        .debug-border {
+            border: 1px dashed #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar container">
+            <div class="logo">
+                E-Store
+            </div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="#home">Главная</a>
+                <a href="products.html">Товары</a>
+                <a href="categories.html">Категории</a>
+                <a href="cart.html">
+                    Корзина
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+                <a href="#login" id="loginLink">Войти</a>
+                <a href="profile.html" id="profileLink">Профиль</a>
+            </div>
+        </nav>
+
+    </header>
+
+    <!-- Main Content -->
+    <main id="mainContent">
+        <section class="landing-hero">
+            <div class="hero-overlay"></div>
+            <div class="container hero-inner">
+                <p class="badge">Добро пожаловать в E-Store</p>
+                <h1>Техника, которая вдохновляет</h1>
+                <p class="hero-subtitle">Откройте для себя смартфоны, ноутбуки, аксессуары и всё, что нужно для вашего цифрового комфорта.</p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="products.html">Перейти в каталог</a>
+                    <a class="btn btn-primary" href="#popular">Популярные товары</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Сюда будет вставляться содержимое страницы -->
+        <div id="pageContent"></div>
+
+        <section class="container popular-section" id="popular">
+            <div class="section-header centered">
+                <div>
+                    <h2>Популярные товары</h2>
+                    <p>Лучшие предложения этой недели</p>
+                </div>
+            </div>
+
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image placeholder">📱</div>
+                    <div class="product-info">
+                        <h3>Смартфон X</h3>
+                        <p class="product-model">6.7" OLED · 256 ГБ</p>
+                        <p class="product-price">1 899 BYN</p>
+                        <div class="product-meta">
+                            <span class="chip">Доставка за 1 день</span>
+                            <span class="chip">Хит</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image placeholder">💻</div>
+                    <div class="product-info">
+                        <h3>Ноутбук Pro</h3>
+                        <p class="product-model">RTX 4060 · 16 ГБ RAM</p>
+                        <p class="product-price">3 499 BYN</p>
+                        <div class="product-meta">
+                            <span class="chip">Рассрочка 0%</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image placeholder">🎧</div>
+                    <div class="product-info">
+                        <h3>Наушники Max</h3>
+                        <p class="product-model">ANC · 30 ч работы</p>
+                        <p class="product-price">799 BYN</p>
+                        <div class="product-meta">
+                            <span class="chip">Бестселлер</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image placeholder">⌚</div>
+                    <div class="product-info">
+                        <h3>Смарт-часы</h3>
+                        <p class="product-model">AMOLED · NFC</p>
+                        <p class="product-price">549 BYN</p>
+                        <div class="product-meta">
+                            <span class="chip">Хит продаж</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 2rem 0;">
+                <a class="btn btn-primary" href="products.html">Перейти в каталог</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>E-Store</h3>
+                    <p>Ваш надежный партнер в мире электроники</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Контакты</h3>
+                    <p>📞 +375 (29) 123-45-67</p>
+                    <p>✉️ info@estore.com</p>
+                    <p>📍 г. Минск</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 E-Store</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/utils/storage.js"></script>
+    <script src="js/components/auth.service.js"></script>
+    <script src="js/services/cart.service.js"></script>
+    <script src="js/components/cart.js"></script>
+    <script src="js/components/products.js"></script>
+    <script src="js/components/categories.js"></script>
+    <script src="js/utils/app.js"></script>
+    <script>
+        // Инициализация корзины на главной странице
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализируем корзину
+            if (typeof SimpleCart !== 'undefined') {
+                window.cart = new SimpleCart();
+                cart.updateUI();
+            }
+
+            // Обновляем UI авторизации
+            App.updateAuthUI(!!localStorage.getItem('token'));
+        });
+    </script>
+
+</body>
+</html>

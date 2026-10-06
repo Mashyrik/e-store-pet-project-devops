@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Store - Каталог товаров</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .catalog-hero {
+            background: linear-gradient(135deg, rgba(79,70,229,0.12), rgba(16,185,129,0.12));
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        .catalog-hero h1 {
+            font-size: 2.4rem;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        .catalog-hero p {
+            color: #4b5563;
+        }
+        .filters-bar {
+            background: #fff;
+            border: 1px solid #eef1f6;
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            align-items: center;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+            margin-bottom: 1.5rem;
+        }
+        .filters-bar input,
+        .filters-bar select {
+            width: 100%;
+            padding: 0.75rem 0.9rem;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            font-size: 1rem;
+        }
+        .filters-bar input:focus,
+        .filters-bar select:focus {
+            outline: 2px solid #6366f1;
+            border-color: #6366f1;
+        }
+        .catalog-wrapper {
+            padding: 0 0 4rem;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin-top: 3rem;
+            padding: 1.5rem 0;
+        }
+        .pagination-btn {
+            min-width: 120px;
+            padding: 0.75rem 1.5rem;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-info {
+            font-size: 1rem;
+            color: #4b5563;
+            font-weight: 500;
+        }
+        #addProductBtn {
+            transition: all 0.3s ease;
+        }
+        #addProductBtn:hover {
+            background: #059669 !important;
+            border-color: #059669 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+    </style>
+</head>
+<body>
+<!-- Хедер -->
+<header class="header">
+    <nav class="navbar container">
+        <div class="logo">
+            E-Store
+        </div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Главная</a>
+            <a href="products.html" class="active">Товары</a>
+            <a href="categories.html">Категории</a>
+            <a href="cart.html">
+                Корзина
+                <span class="cart-count" id="cartCount">0</span>
+            </a>
+            <a href="login.html" id="loginLink">Войти</a>
+            <a href="profile.html" id="profileLink">Профиль</a>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <section class="catalog-hero">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1>Каталог товаров</h1>
+                <p>Выбирайте из популярных категорий и добавляйте в корзину</p>
+            </div>
+            <button class="btn btn-primary" id="addProductBtn" style="display: none; padding: 0.75rem 1.5rem; font-size: 1rem; background: #10b981; border-color: #10b981; white-space: nowrap;">
+                ➕ Добавить товар
+            </button>
+        </div>
+    </section>
+
+    <div class="container catalog-wrapper">
+        <div class="filters-bar">
+            <input type="text" id="searchProducts" placeholder="Поиск по названию или модели">
+            <select id="categoryFilter">
+                <option value="">Все категории</option>
+                <option value="Смартфоны">Смартфоны</option>
+                <option value="Ноутбуки">Ноутбуки</option>
+                <option value="Аудиотехника">Аудиотехника</option>
+            </select>
+            <button class="btn btn-outline" id="resetFilters">Сбросить фильтры</button>
+        </div>
+
+        <div id="products-container" class="products-grid">
+            <p>Загрузка товаров...</p>
+        </div>
+        
+        <div id="pagination-container"></div>
+    </div>
+</main>
+
+<!-- Футер -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>E-Store</h3>
+                <p>Ваш надежный партнер в мире электроники</p>
+            </div>
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>📞 +375 (29) 123-45-67</p>
+                <p>✉️ info@estore.com</p>
+                <p>📍 г. Минск</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 E-Store</p>
+        </div>
+    </div>
+</footer>
+
+<!-- JavaScript -->
+<script src="js/utils/storage.js"></script>
+<script src="js/components/auth.service.js"></script>
+<script src="js/services/cart.service.js"></script>
+<script src="js/components/cart.js"></script>
+<script src="js/components/products.js"></script>
+<script src="js/utils/app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        App.updateAuthUI(!!localStorage.getItem('token'));
+        
+        // Проверяем, нужно ли обновить товары (например, после создания нового)
+        const shouldRefresh = sessionStorage.getItem('refreshProducts');
+        if (shouldRefresh) {
+            sessionStorage.removeItem('refreshProducts');
+            // Очищаем кэш перед загрузкой
+            if (ProductsComponent.productsCache) {
+                ProductsComponent.productsCache = [];
+            }
+        }
+        
+        ProductsComponent.init();
+
+        // Проверяем, является ли пользователь админом, и показываем кнопку добавления товара
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const addProductBtn = document.getElementById('addProductBtn');
+            if (addProductBtn && user.role === 'ROLE_ADMIN') {
+                addProductBtn.style.display = 'block';
+                addProductBtn.addEventListener('click', () => {
+                    window.location.href = 'product.html';
+                });
+            }
+        } catch (e) {
+            console.error('Error checking admin role:', e);
+        }
+
+        const searchInput = document.getElementById('searchProducts');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const resetBtn = document.getElementById('resetFilters');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                ProductsComponent.searchProducts(e.target.value);
+            });
+        }
+
+        if (categoryFilter) {
+            categoryFilter.addEventListener('change', () => {
+                ProductsComponent.filterByCategory(categoryFilter.value);
+            });
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                if (searchInput) searchInput.value = '';
+                if (categoryFilter) categoryFilter.value = '';
+                ProductsComponent.resetFilters();
+            });
+        }
+
+        // Инициализируем корзину
+        if (typeof SimpleCart !== 'undefined' && !window.cart) {
+            window.cart = new SimpleCart();
+        }
+        
+        // Обновляем счетчик корзины
+        if (typeof App !== 'undefined' && App.updateCartCount) {
+            App.updateCartCount();
+        }
+    });
+</script>
+</body>
+</html>
+
