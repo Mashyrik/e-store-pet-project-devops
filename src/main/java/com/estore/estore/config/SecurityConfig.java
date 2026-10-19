@@ -72,6 +72,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/api/status").permitAll()
+
+                        // Kubernetes probes and Prometheus scraping
+                        .requestMatchers("/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/info").permitAll()
+                        .requestMatchers("/actuator/prometheus").permitAll()
                         
                         // Статические ресурсы (HTML, CSS, JS файлы)
                         .requestMatchers("/", "/*.html", "/*.css", "/*.js", "/css/**", "/js/**", "/images/**").permitAll()

@@ -1,6 +1,6 @@
 services:
   app:
-    image: e_store
+    image: e_store:dev
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,9 +12,15 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      FLYWAY_BASELINE_ON_MIGRATE: ${FLYWAY_BASELINE_ON_MIGRATE:-false}
+
+      ADMIN_BOOTSTRAP_ENABLED: ${ADMIN_BOOTSTRAP_ENABLED:-false}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
     ports:
-      - 8080:8080
+      - "8080:8080"
 
   db:
     image: postgres:17
@@ -27,6 +33,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s
     volumes:
       - db-data:/var/lib/postgresql/data
 
