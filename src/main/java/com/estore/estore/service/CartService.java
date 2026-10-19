@@ -86,19 +86,21 @@ public class CartService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + request.getProductId()));
 
-        // Проверяем наличие товара
-        if (product.getStockQuantity() < request.getQuantity()) {
-            throw new BusinessException("Not enough stock for product: " + product.getName());
-        }
-
         // Проверяем, есть ли уже этот товар в корзине
         Optional<CartItem> existingItem = cartItemRepository.findByUserIdAndProductId(user.getId(), product.getId());
+        int existingQuantity = existingItem.map(CartItem::getQuantity).orElse(0);
+        int resultingQuantity = existingQuantity + request.getQuantity();
+
+        // Проверяем итоговое количество, а не только вновь добавляемое.
+        if (product.getStockQuantity() < resultingQuantity) {
+            throw new BusinessException("Not enough stock for product: " + product.getName());
+        }
 
         CartItem cartItem;
         if (existingItem.isPresent()) {
             // Обновляем количество если товар уже в корзине
             cartItem = existingItem.get();
-            cartItem.setQuantity(cartItem.getQuantity() + request.getQuantity());
+            cartItem.setQuantity(resultingQuantity);
             System.out.println("=== CART DEBUG: Updating existing cart item, new quantity: " + cartItem.getQuantity() + " ===");
         } else {
             // Создаем новый элемент корзины

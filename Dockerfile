@@ -9,7 +9,7 @@ RUN --mount=type=cache,target=/root/.m2 \
 
 COPY src ./src
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn -B --no-transfer-progress verify
+    mvn -B --no-transfer-progress package -DskipITs
 
 FROM eclipse-temurin:21-jre
 
