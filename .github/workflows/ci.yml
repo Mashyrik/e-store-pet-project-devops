@@ -8,15 +8,15 @@ jobs:
     name: Test Application
     runs-on: ubuntu-latest
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v7
-      with:
-        distribution: temurin
-        java-version: "17"
-        cache: maven
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
     
-    - name: Run Maven verification
-      run: ./mvnw -B --no-transfer-progress clean verify
-    - name: Run SpotBugs analysis
-      run: ./mvnw -B --no-transfer-progress spotbugs:check
+      - name: Run Maven verification
+        run: ./mvnw -B --no-transfer-progress clean verify
+      - name: Run SpotBugs analysis
+        run: ./mvnw -B --no-transfer-progress spotbugs:check
