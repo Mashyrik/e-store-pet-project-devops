@@ -32,3 +32,15 @@ jobs:
       
       - name: Build Docker image
         run: docker build --tag e-store:ci .
+      
+      - name: Scan Docker Image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image_ref: e-store:ci
+          format: table
+          exit-code: 1
+          ignore-unfixed: true
+          vuln_type: os,library
+          severity: HIGH,CRITICAL
+      
+  
