@@ -28,36 +28,22 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
-            // Очищаем SecurityContext перед установкой нового
             SecurityContextHolder.clearContext();
-            
+
             String jwt = parseJwt(request);
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-                // ✅ ПОЛУЧАЕМ AUTHORITIES ИЗ ТОКЕНА
                 List<GrantedAuthority> authorities = jwtUtils.getAuthoritiesFromJwtToken(jwt);
 
-                // Создаем Authentication объект с authorities из токена
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                // Логирование для отладки
-                System.out.println("=== AUTH DEBUG ===");
-                System.out.println("User: " + username);
-                System.out.println("Authorities from token: " + authorities);
-                System.out.println("Request URI: " + request.getRequestURI());
-                System.out.println("SecurityContext set for: " + SecurityContextHolder.getContext().getAuthentication().getName());
-                System.out.println("==================");
-            } else {
-                System.out.println("=== AUTH DEBUG: No valid JWT token found ===");
             }
         } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
-            System.err.println("=== AUTH ERROR: " + e.getMessage() + " ===");
+            logger.error("Cannot set user authentication", e);
         }
 
         filterChain.doFilter(request, response);
