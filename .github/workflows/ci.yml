@@ -21,5 +21,11 @@ jobs:
     
       - name: Run Maven verification
         run: ./mvnw -B --no-transfer-progress clean verify
+
       - name: Run SpotBugs analysis
         run: ./mvnw -B --no-transfer-progress spotbugs:check
+        
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.4.0
+        with:
+          dockerfile: Dockerfile
