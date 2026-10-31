@@ -1,0 +1,4 @@
+db_name = "e-store_lab"
+db_user = "postgres"
+db_password = "change"
+jwt_secret = "replace-with-a-secret-at-least-32-characters-long"
