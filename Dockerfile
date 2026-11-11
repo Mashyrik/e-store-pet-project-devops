@@ -11,7 +11,7 @@ COPY src ./src
 RUN --mount=type=cache,target=/root/.m2 \
     mvn -B --no-transfer-progress package -DskipITs
 
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:24-jre
 
 WORKDIR /app
 COPY --from=build --chown=10001:10001 /build/target/e-store-*.jar app.jar
