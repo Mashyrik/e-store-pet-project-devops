@@ -121,7 +121,7 @@ jobs:
 
     steps:
       - name: Download Docker image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: e-store-ci-image
           path: .
