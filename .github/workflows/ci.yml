@@ -103,7 +103,7 @@ jobs:
 
       - name: Upload Docker image artifact
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: e-store-ci-image
           path: e-store-ci.tar
