@@ -1,0 +1,101 @@
+---
+- name: Configure e-store Ubuntu server
+  hosts: app
+  become: true
+
+  tasks:
+    - name: Update apt package index
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base packages
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+          - git
+          - unzip
+        state: present
+
+    - name: Install Docker packages
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose-v2
+        state: present
+
+    - name: Ensure Docker service is enabled and running
+      ansible.builtin.systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Add devops user to the docker group
+      ansible.builtin.user:
+        name: devops
+        groups: docker
+        append: true
+
+    - name: Create application directory
+      ansible.builtin.file:
+        path: /opt/e-store
+        state: directory
+        owner: devops
+        group: devops
+        mode: "0755"
+
+    - name: Copy Docker Compose file
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../compose.yaml"
+        dest: /opt/e-store/compose.yaml
+        owner: devops
+        group: devops
+        mode: "0644"
+
+    - name: Copy Dockerfile
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../Dockerfile"
+        dest: /opt/e-store/Dockerfile
+        owner: devops
+        group: devops
+        mode: "0644"
+
+    - name: Copy Docker ignore rules
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../.dockerignore"
+        dest: /opt/e-store/.dockerignore
+        owner: devops
+        group: devops
+        mode: "0644"
+
+    - name: Copy Maven project file
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../pom.xml"
+        dest: /opt/e-store/pom.xml
+        owner: devops
+        group: devops
+        mode: "0644"
+
+    - name: Copy application source code
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../src/"
+        dest: /opt/e-store/src/
+        owner: devops
+        group: devops
+        mode: "0644"
+        directory_mode: "0755"
+
+    - name: Create application environment file
+      no_log: true
+      ansible.builtin.template:
+        src: "{{ playbook_dir }}/templates/app.env.j2"
+        dest: /opt/e-store/.env
+        owner: devops
+        group: devops
+        mode: "0600"
+
+    - name: Start application with Docker Compose
+      ansible.builtin.command:
+        cmd: docker compose up -d --build
+        chdir: /opt/e-store
