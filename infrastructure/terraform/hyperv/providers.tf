@@ -1,0 +1,3 @@
+provider "hyperv" {
+  backend = "local"
+}

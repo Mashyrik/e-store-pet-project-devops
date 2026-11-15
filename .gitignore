@@ -24,6 +24,8 @@ Thumbs.db
 
 # env
 .env
+.env.*
+!.env.example
 
 # Terraform
 **/.terraform/*
@@ -35,3 +37,9 @@ Thumbs.db
 *.tfplan
 crash.log
 crash.*.log
+
+# Ansible local files and secret material
+*.retry
+.ansible/
+**/.vault-password-file
+**/vault-password.txt
