@@ -1,0 +1,21 @@
+environment_name = "e-store-lab"
+vm_name          = "e-store-ubuntu-auto"
+
+vm_cpu_count        = 2
+vm_memory_min_mb    = 1024
+vm_memory_startup_mb = 2048
+vm_memory_max_mb    = 4096
+
+network_name  = "e-store-lab-nat"
+nat_name      = "e-store-lab-nat"
+network_prefix = "192.168.100.0/24"
+gateway_ip     = "192.168.100.1"
+vm_ip          = "192.168.100.10"
+
+ssh_external_port         = 2222
+application_external_port = 8080
+
+lab_root       = "C:/Users/skmtt/HyperV/e-store-automated-lab"
+vm_mac_address = "00155D010010"
+
+ssh_public_key = "ssh-ed25519 REPLACE_WITH_YOUR_PUBLIC_KEY"
